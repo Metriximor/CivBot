@@ -7,7 +7,12 @@ from discord.ext import commands
 
 
 prefix = "%"
-bot = commands.Bot(command_prefix=prefix, description="CivBot", help_command=None)
+
+intents = discord.Intents.default()
+intents.message_content = True  # Needed if your bot reads message content
+
+bot = commands.Bot(command_prefix=prefix, description="CivBot", help_command=None, intents=intents)
+
 
 gnu_linux = """
 I'd just like to interject for a moment. What you're referring to as Linux, is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux. Linux is not an operating system unto itself, but rather another free component of a fully functioning GNU system made useful by the GNU corelibs, shell utilities and vital system components comprising a full OS as defined by POSIX.
