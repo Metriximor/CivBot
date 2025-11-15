@@ -2,7 +2,7 @@
 // (It's easiest to ignore the generation at the top of this file and skip down to the "drama" and "twist" categories)
 
 title
-  CivClassic Drama Generator
+  CivMC Drama Generator
 
 output
   [outputreal.sentenceCase]
@@ -10,7 +10,7 @@ output
   [outputPrepend.sentenceCase] [outputreal] ^1/75
   [outputPrepend.sentenceCase] [outputreal][outputAppend] ^1/250
   The fuck is this channel and this bot? ^1/1000
-  *Ran out of good drama? Make a pull request to update the drama generator here:* **https://github.com/squareblob/CivBot/blob/master/resources/TextMeme/perchance.txt** ^1/500
+  *Ran out of good drama? Make a pull request to update the drama generator here:* **https://github.com/Metriximor/CivBot/blob/master/resources/TextMeme/perchance.txt** ^1/500
 
 outputPrepend
   Did you know
@@ -134,6 +134,7 @@ otherplace
   Devoted
   Devoted Hell
   CivClassics
+  CivMC
   CivRealms
   {Civcraft 2.0|Civcraft 3.0}
   CivEx
@@ -201,18 +202,13 @@ funnyplayer
   ahme63
   Ahri
   AllenY
-  {AmandaCC|Amanda Closed Captions}
+  {DetectiveCC|Detective Closed Captions}
   Ameliorate
   Amelorate
   {animeme_master|animaymay}
-  ashnwill
-  awoo
-  Bagi
+  banyough
   bgbba
-  Bonkill
-  Convoy
   BritishWanderer
-  Callum
   ChocChips
   ChrisChrispie
   Citylion
@@ -234,39 +230,34 @@ funnyplayer
   Gjum
   Gobblin
   Godomasta
-  HenryDraton
-  hkl
+  Byhalia
+  Hakr_
   hockey328
   Infra
-  InvertedMind
-  Jayms
   JuniorTide
   kaprediem
   Lodish
   Lowtuff
   LordOfMarzipan
-  Lysika_Lantariel
-  Magmus
   Maxopoly
   {minemaster|BinaryToast1}
   Medwedian
   Metriximor
   Mickale
   MrLlamma
-  NEBULANDD
   ObtainableSpatula
   Okx
   OLivay
   Orinnari
-  OperationguyMCS
+  ofthesunrise
   pamplemousse
+  Passencore
   Pirater
   Poortea
   ProgramMC
   ProgrammerDan
   QJI
   Raven
-  RektTangle
   RedDevel
   S4NTA
   Shadedoom
@@ -284,14 +275,9 @@ funnyplayer
   TheOrangeWizard
   Thraldrek
   Topher
-  TopWolf
-  Trevie303
   ttk2
   Wingzero54
   WNS2
-  wjkroeker
-  Xavter
-  Yellofishy
   yodabird19
   
   
@@ -303,130 +289,43 @@ nation
 
 funnynation
   some one-man nation
-  Bloom
-  Rhodesia
-  Columbia
-  CSA
-  The Commonwealth
-  Hjaltland
-  Gensokyo
-  Hallow
-  the Holy Jaded Empire
-  Imperial Truidence
+  Estalia
   Yoahtl
-  Lusitania
-  Lumiere
   Icenia
+  Columbia
+  The Commonwealth
+  Lusitania
   Caledonia
-  Lexington
-  Mir
   Mount Augusta
-  Mount September
   Nipplerock
-  Pacem
-  SPQR
-  Varkonia
-  South Augusta
-  Tvtopia
-  Tierra de Conciencia
-  Gabon
+  Pavia
   Lambat
-  Potistan
-  Capeland
-  Carson
+  Mehry
   Cortesia Del Mar
-  some Nro tribe
-  CCCP
-  Monterrey
-  Wolken
-  Admin Town
   
 
 unfunnynation
+  Gensokyo
+  Imperial Truidence
+  Pacem
+  SPQR
+  Ila'Kyavul
   Air Bud Republic
-  Airhaven
   Albion
-  Alponia
-  Anguish
-  the Antipodean Union
-  Appomattox
-  Astoria
-  Atlantis
-  Augsburg
-  Bibelebonse Berg
-  Blackwater
-  the Brotherhood of Steel
-  Carpathia
-  Ceylon
-  Champtown
-  the Chanseatic State
-  the City of England
-  CivWikistan
-  Nyasaland
-  Coventhia
-  Dagon
-  the Entranan Republic
-  Unitas
-  Gondolin
-  Grand Imperium
-  Greenmarsh
-  Impasse
-  Iria
-  the Jefferson Confederacy
   Kaltsburg
-  Kanagawa
-  Königsberg
-  Laconia
-  Leuven
-  Loveshack
-  Luxemburg
-  Maltovia
-  Mithrin
+  CivWikistan
   Mount Chungusta
-  Nevrast
-  Nro'meagh
-  Nyasaland
-  Odresh
-  Oistins
-  Okashima
-  Ossenkirch
-  Panem
-  Pinkerton
-  Polska
-  Pripyat
-  Resimere
-  Rhodesia
   Sovia
-  Stonewall
-  Tambov
-  Tel Aviv
-  Thalassocracy
-  Trekestan
-  Tungsten
-  the Union of Socialist Augusta
-  Valyria
-  Verda
-  Vinland
-  Volterra
-  Vítelia
-  Wayrest
-  Westeros
-  Xalta Moro
 
 alliance
-  the UDF
-  the Entente
-  the Augustan Federation
-  the CES
-  SATO
-  NATO
-  the DUMP
-  the UNC
-  
+  the Lyrean Commonwealth
+  the Southern Protection Alliance
+  the International Coalition of Empires
+  the Dawn Guard Pact
+  the Western Anti-Raider Defence Alliance
+  the Ascendancy of Sovereign Nations
 
 drama
-  [actor] said the full name of Hjaltland
-  [player] said he would pearl every female on the server
   [player] banned [player] from the [nation] discord
   [player] cracked [nation]'s vault
   [player] popped a shop chest in [place]
@@ -452,7 +351,6 @@ drama
   [actors] died in [place]
   [actors] built a bunker in [place]
   [actors] doxxed the members of [place]
-  [actors] said Hantzu was babyraging over [place]
   [actors] built a secret 'friendly' bunker underneath [place]
   [nation] is a tier four nation throwing pebbles at the tier one nation of [nation]
   [actor] is a mere puppet controlled by [place]
@@ -462,7 +360,6 @@ drama
   [actors] made propaganda against [place]
   [actor] was irrelevant to [place]
   [actors] built a 'farm' with a decorative snitch curtain 700 blocks from [place]
-  [actors] raised the ground level by 15 blocks in [place]
   [actors] built map art of [player] in [place]
   [actors] couped [place]
   [player] stole the Discord permissions of [place]
@@ -482,11 +379,8 @@ drama
   [player] is an alt of [actorOrPlace]
   [actor] fell in love with [actorOrPlace]
   [actors] drank cherry juice with [actorOrPlace]
-  [place] is a chickenshit outfit
   [actors] told [actor] to stfu
   [actors] died
-  [actors] revealed that they caused the Somber War
-  [actors] revealed that they masterminded the Somber War
   [actors] doxxed themselves
   [actors] went afk
   [actors] lagged out
@@ -547,7 +441,6 @@ drama
   [player] recruited an army of jaja's from [website]
   [player] shared a macromod script that deleted all groups in [place]
   [player] shared a macromod script and as a result [drama]
-  [player] starred a racist message sent by [actor]
   [player] called [player] a retard
   The [nation] subreddit was banned because [player] was an admin of r/The_[actor]
   [player] thought [nation] existed IRL
@@ -829,15 +722,11 @@ website
   reddit
   r/gaming
   r/minecraft
-  r/civclassic
+  r/civmc
   4chan
   an obscure Russian forum
-  the Israeli Twitch community
 
 event
-  the Somber War
-  the Infinity War
   [actor] quitting
-  the Kidnapping of December
   [nation] forming
   Wingzero's latest pull request

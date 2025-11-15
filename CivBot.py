@@ -11,7 +11,9 @@ prefix = "%"
 intents = discord.Intents.default()
 intents.message_content = True  # Needed if your bot reads message content
 
-bot = commands.Bot(command_prefix=prefix, description="CivBot", help_command=None, intents=intents)
+bot = commands.Bot(
+    command_prefix=prefix, description="CivBot", help_command=None, intents=intents
+)
 
 
 gnu_linux = """
@@ -29,26 +31,37 @@ last_times = {}
 @bot.command(pass_context=True)
 async def invite(ctx):
     """CivBot invite"""
-    await ctx.channel.send("https://discordapp.com/api/oauth2/authorize?client_id=614086832245964808&permissions=0&scope=bot")
+    await ctx.channel.send(
+        "https://discordapp.com/api/oauth2/authorize?client_id=614086832245964808&permissions=0&scope=bot"
+    )
 
 
 @bot.event
 async def on_message(ctx):
     try:
-        if ctx.author.id == bot.user.id: return  # ignore self
+        if ctx.author.id == bot.user.id:
+            return  # ignore self
         else:
-            match_relay_chat_command = re.match("(?:`\[(?:\S+)\]` )*\[(?:\S+)\] ((%(?:\S+))(?: .+)*)", ctx.content)
+            match_relay_chat_command = re.match(
+                "(?:`\[(?:\S+)\]` )*\[(?:\S+)\] ((%(?:\S+))(?: .+)*)", ctx.content
+            )
             if len(ctx.content) != 0 and prefix == ctx.content[0]:
                 await bot.process_commands(ctx)
             elif match_relay_chat_command:
                 ctx.content = match_relay_chat_command.group(1).strip()
                 if match_relay_chat_command.group(2) == "%whereis":
-                    coords = re.match("%whereis ((?:[+-]?\d)+)[ ,]((?:[+-]?\d)+)", ctx.content)
-                    MiscUtilities = bot.get_cog('MiscUtilities')
+                    coords = re.match(
+                        "%whereis ((?:[+-]?\d)+)[ ,]((?:[+-]?\d)+)", ctx.content
+                    )
+                    MiscUtilities = bot.get_cog("MiscUtilities")
                     if MiscUtilities is not None:
-                        await MiscUtilities.whereis(ctx, coords.group(1), coords.group(2), True)
-                elif match_relay_chat_command.group(2) == "%drama": # set temporarily as somehow broken
-                    TextMeme = bot.get_cog('TextMeme')
+                        await MiscUtilities.whereis(
+                            ctx, coords.group(1), coords.group(2), True
+                        )
+                elif (
+                    match_relay_chat_command.group(2) == "%drama"
+                ):  # set temporarily as somehow broken
+                    TextMeme = bot.get_cog("TextMeme")
                     if TextMeme is not None:
                         await TextMeme.drama(ctx)
                 else:
@@ -56,14 +69,24 @@ async def on_message(ctx):
                     await bot.process_commands(ctx)
             else:  # regular chat message
                 lower_content = ctx.content.lower()
-                if 'delusional' in lower_content:
-                    await ctx.channel.send("Edit CivWiki <https://civwiki.org/wiki/CivWiki:Editing_Guide>")
-                if 'lusitanian' in lower_content:
-                    await ctx.channel.send(file=discord.File('resources/ImageMeme/Lusitan.png'))
-                if 'his final message' in lower_content:
-                    await ctx.channel.send("To live as a septembrian, is to embrace death.")
-                if 'linux' in lower_content and not 'gnu' in lower_content and 60 > time.time() - last_times.get('gnu_linux', 0):
-                    last_times['gnu_linux'] = time.time()
+                if "delusional" in lower_content:
+                    await ctx.channel.send(
+                        "Edit CivWiki <https://civwiki.org/wiki/CivWiki:Editing_Guide>"
+                    )
+                if "lusitanian" in lower_content:
+                    await ctx.channel.send(
+                        file=discord.File("resources/ImageMeme/Lusitan.png")
+                    )
+                if "his final message" in lower_content:
+                    await ctx.channel.send(
+                        "To live as a septembrian, is to embrace death."
+                    )
+                if (
+                    "linux" in lower_content
+                    and "gnu" not in lower_content
+                    and 60 > time.time() - last_times.get("gnu_linux", 0)
+                ):
+                    last_times["gnu_linux"] = time.time()
                     await ctx.channel.send(gnu_linux)
 
                 match_page = "\[{2}([^\]\n]+) *\]{2}"
@@ -82,12 +105,15 @@ async def on_message(ctx):
                     await ctx.channel.send(wiki_message)
             if len(ctx.attachments) != 0:
                 for x in ctx.attachments:
-                    if os.path.splitext(x.filename)[1] == ".schematic" or os.path.splitext(x.filename)[1] == ".schem":
-                        MiscUtilities = bot.get_cog('MiscUtilities')
+                    if (
+                        os.path.splitext(x.filename)[1] == ".schematic"
+                        or os.path.splitext(x.filename)[1] == ".schem"
+                    ):
+                        MiscUtilities = bot.get_cog("MiscUtilities")
                         if MiscUtilities is not None:
                             await MiscUtilities.getschematic(ctx, x)
     except AttributeError:
-        print("From " + str (ctx.author) + ": " + ctx.content)
+        print("From " + str(ctx.author) + ": " + ctx.content)
 
 
 @bot.event
@@ -96,21 +122,18 @@ async def on_ready():
     print("In " + str(len(bot.guilds)) + " guilds")
     for guild in bot.guilds:
         print("    " + guild.name)
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game('reddit.com/r/civclassics'))
+    await bot.change_presence(
+        status=discord.Status.online, activity=discord.Game("reddit.com/r/civclassics")
+    )
 
 
-extensions = [
-    "ImageMeme",
-    "TextMeme",
-    "MiscUtilities",
-    "CivDiscord"
-]
+extensions = ["ImageMeme", "TextMeme", "MiscUtilities", "CivDiscord"]
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
-    config_type = 'auth'
-    config.read('config.ini')
-    token = config.get(config_type, 'token')
+    config_type = "auth"
+    config.read("config.ini")
+    token = config.get(config_type, "token")
 
     for extension in extensions:
         bot.load_extension(f"cogs.{extension}")
