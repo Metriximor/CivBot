@@ -238,5 +238,5 @@ class MiscUtilities(commands.Cog):
         await ctx.channel.send(output + "```")
 
 
-def setup(bot):
-    bot.add_cog(MiscUtilities(bot))
+async def setup(bot):
+    await bot.add_cog(MiscUtilities(bot))

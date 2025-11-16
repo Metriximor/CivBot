@@ -634,5 +634,5 @@ class ImageMeme(commands.Cog):
             await ctx.channel.send(file=discord.File("resources/output.png"))
 
 
-def setup(bot):
-    bot.add_cog(ImageMeme(bot))
+async def setup(bot):
+    await bot.add_cog(ImageMeme(bot))

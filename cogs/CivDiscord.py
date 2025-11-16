@@ -193,5 +193,5 @@ class CivDiscord(commands.Cog):
             return None
 
 
-def setup(bot):
-    bot.add_cog(CivDiscord(bot))
+async def setup(bot):
+    await bot.add_cog(CivDiscord(bot))

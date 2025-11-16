@@ -468,7 +468,7 @@ class TextMeme(commands.Cog):
         message: str = f"{content} is the new 'mayor' of Mount September."
         await ctx.send(message)
 
-    @commands.command(, brief="Frees a players pearl")
+    @commands.command(brief="Frees a players pearl")
     async def ppfree(self, ctx, *, content):
         """`ppfree <playername>`"""
         with open("resources/pearl locations.txt", "r") as file:
@@ -481,7 +481,7 @@ class TextMeme(commands.Cog):
 
 
 async def setup(bot):
-    bot.add_cog(TextMeme(bot))
+    await bot.add_cog(TextMeme(bot))
 
 
 # todo : Disabled as perchance.py needs tweaks to use funfact

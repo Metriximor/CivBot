@@ -309,5 +309,5 @@ class VoiceRelayCog(commands.Cog):
                 pickle.dump(current_vc_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-def setup(bot):
-    bot.add_cog(VoiceRelayCog(bot))
+async def setup(bot):
+    await bot.add_cog(VoiceRelayCog(bot))
