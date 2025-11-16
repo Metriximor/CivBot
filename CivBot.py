@@ -43,7 +43,7 @@ async def on_message(ctx):
             return  # ignore self
         else:
             match_relay_chat_command = re.match(
-                "(?:`\[(?:\S+)\]` )*\[(?:\S+)\] ((%(?:\S+))(?: .+)*)", ctx.content
+                r"(?:`\[(?:\S+)\]` )*\[(?:\S+)\] ((%(?:\S+))(?: .+)*)", ctx.content
             )
             if len(ctx.content) != 0 and prefix == ctx.content[0]:
                 await bot.process_commands(ctx)
@@ -51,7 +51,7 @@ async def on_message(ctx):
                 ctx.content = match_relay_chat_command.group(1).strip()
                 if match_relay_chat_command.group(2) == "%whereis":
                     coords = re.match(
-                        "%whereis ((?:[+-]?\d)+)[ ,]((?:[+-]?\d)+)", ctx.content
+                        r"%whereis ((?:[+-]?\d)+)[ ,]((?:[+-]?\d)+)", ctx.content
                     )
                     MiscUtilities = bot.get_cog("MiscUtilities")
                     if MiscUtilities is not None:
@@ -89,8 +89,8 @@ async def on_message(ctx):
                     last_times["gnu_linux"] = time.time()
                     await ctx.channel.send(gnu_linux)
 
-                match_page = "\[{2}([^\]\n]+) *\]{2}"
-                match_template = "\{{2}([^\]\n]+) *\}{2}"
+                match_page = r"\[{2}([^\]\n]+) *\]{2}"
+                match_template = r"\{{2}([^\]\n]+) *\}{2}"
 
                 wiki_message = ""
                 wiki_link = "https://civwiki.org/wiki/"
