@@ -4,6 +4,7 @@ import re
 import time
 import discord
 from discord.ext import commands
+from cogs.TextMeme import TextMeme
 
 
 prefix = "%"
@@ -36,37 +37,29 @@ async def invite(ctx):
     )
 
 
+@bot.command(pass_context=True)
+async def drama(ctx):
+    text_meme: TextMeme = bot.get_cog("TextMeme")
+    if text_meme is not None:
+        await text_meme.drama(ctx)
+
+
+@bot.command(pass_context=True)
+async def whereis(ctx):
+    coords = re.match(r"%whereis ((?:[+-]?\d)+)[ ,]((?:[+-]?\d)+)", ctx.content)
+    MiscUtilities = bot.get_cog("MiscUtilities")
+    if MiscUtilities is not None:
+        await MiscUtilities.whereis(ctx, coords.group(1), coords.group(2), True)
+
+
 @bot.event
 async def on_message(ctx):
     try:
         if ctx.author.id == bot.user.id:
             return  # ignore self
         else:
-            match_relay_chat_command = re.match(
-                r"(?:`\[(?:\S+)\]` )*\[(?:\S+)\] ((%(?:\S+))(?: .+)*)", ctx.content
-            )
             if len(ctx.content) != 0 and prefix == ctx.content[0]:
                 await bot.process_commands(ctx)
-            elif match_relay_chat_command:
-                ctx.content = match_relay_chat_command.group(1).strip()
-                if match_relay_chat_command.group(2) == "%whereis":
-                    coords = re.match(
-                        r"%whereis ((?:[+-]?\d)+)[ ,]((?:[+-]?\d)+)", ctx.content
-                    )
-                    MiscUtilities = bot.get_cog("MiscUtilities")
-                    if MiscUtilities is not None:
-                        await MiscUtilities.whereis(
-                            ctx, coords.group(1), coords.group(2), True
-                        )
-                elif (
-                    match_relay_chat_command.group(2) == "%drama"
-                ):  # set temporarily as somehow broken
-                    TextMeme = bot.get_cog("TextMeme")
-                    if TextMeme is not None:
-                        await TextMeme.drama(ctx)
-                else:
-                    print(ctx.content)
-                    await bot.process_commands(ctx)
             else:  # regular chat message
                 lower_content = ctx.content.lower()
                 if "delusional" in lower_content:
@@ -125,6 +118,14 @@ async def on_ready():
     await bot.change_presence(
         status=discord.Status.online, activity=discord.Game("reddit.com/r/civclassics")
     )
+    registered_cmds = await bot.tree.fetch_commands()
+    local_cmds = {cmd.name for cmd in bot.tree.get_commands()}
+    for cmd in registered_cmds:
+        if cmd.name not in local_cmds:
+            print(f"Deleting unregistered command: {cmd.name}")
+            await bot.tree.remove_command(cmd.name, type=discord.AppCommandType.chat_input)
+    await bot.tree.sync()
+    print("Slash command cleanup complete.")
 
 
 extensions = ["ImageMeme", "TextMeme", "MiscUtilities", "CivDiscord"]
