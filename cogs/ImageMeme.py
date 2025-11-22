@@ -138,13 +138,7 @@ def draw_joinedweezer_image(players):
     if len(players) > len(to_send):
         for x in range(0, len(drawn_players)):
             if drawn_players[x] != "":
-                r = requests.get(
-                    "https://mc-heads.net/player/"
-                    + get_player_data(drawn_players[x]).uuid
-                    + "/"
-                    + str((rect_corners[x][0][1] - rect_corners[x][1][1]) / 2)
-                    + ".png"
-                )
+                r = requests.get(f"https://mc-heads.net/player/{get_player_data(drawn_players[x]).name}/{(rect_corners[x][0][1] - rect_corners[x][1][1]) / 2}.png")
                 with open("resources/test.png", "wb") as f:
                     f.write(r.content)
                 player_to_paste = Image.open("resources/test.png")
@@ -328,7 +322,7 @@ def draw_chart_image(chart_data, chart_code):
             else:
                 r = requests.get(
                     "https://mc-heads.net/avatar/"
-                    + get_player_data(player_name).uuid
+                    + get_player_data(player_name).name
                     + "/"
                     + str(face_width)
                     + ".png"
