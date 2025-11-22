@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import io
 import math
@@ -14,7 +13,7 @@ import aiohttp
 import requests
 import discord
 from os import path
-from mcuuid.api import GetPlayerData
+from mcfetch import Player
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from discord.ext import commands
@@ -23,6 +22,25 @@ from discord.ext.commands import Context
 # -----------
 # Draw images
 # -----------
+cached_player_data: dict[str, Player | None] = {}
+
+
+def get_player_data(name: str) -> Player | None:
+    if name not in cached_player_data:
+        cached_player_data[name] = Player(player=name)
+    return cached_player_data.get(name)
+
+
+def getsize(font: ImageFont.FreeTypeFont, text: str) -> tuple[float, float]:
+    """
+    Mimics the old PIL.ImageFont.FreeTypeFont.getsize() method.
+
+    Returns (width, height) of the given text when rendered with the font.
+    """
+    bbox = font.getbbox(text)
+    width = bbox[2] - bbox[0]
+    height = bbox[3] - bbox[1]
+    return (width, height)
 
 
 def draw_pearl_image(pearled_player: str, pearled_by: str, now: str):
@@ -33,8 +51,8 @@ def draw_pearl_image(pearled_player: str, pearled_by: str, now: str):
     im = Image.open("resources/ImageMeme/Pearl_template.png")
 
     req_width = max(
-        129 + font.getsize(pearled_player + "#" + code)[0] + 23,
-        129 + font.getsize(pearled_by)[0] + 40,
+        129 + getsize(font, pearled_player + "#" + code)[0] + 23,
+        129 + getsize(font, pearled_by)[0] + 40,
     )
 
     if req_width > im.width:
@@ -63,7 +81,7 @@ def draw_pearl_image(pearled_player: str, pearled_by: str, now: str):
             fill=colors[i][0],
         )
         draw.text(
-            (10 + font.getsize(pearled_player)[0] + 12 + 2 - offset, 2 - offset),
+            (10 + getsize(font, pearled_player)[0] + 12 + 2 - offset, 2 - offset),
             "(#0368)",
             font=font,
             fill=colors[i][1],
@@ -72,7 +90,7 @@ def draw_pearl_image(pearled_player: str, pearled_by: str, now: str):
             (129 - offset, 68 - offset), pearled_player, font=font, fill=colors[i][2]
         )
         draw.text(
-            (129 + font.getsize(pearled_player)[0] + 12 - offset, 68 - offset),
+            (129 + getsize(font, pearled_player)[0] + 12 - offset, 68 - offset),
             "#" + code,
             font=font,
             fill=colors[i][3],
@@ -99,21 +117,22 @@ def draw_joinedweezer_image(players):
 
     players = players[:4]
     for p in players:
-        if not GetPlayerData(p).valid:
+        if get_player_data(p) is None:
             to_send.append(
                 discord.utils.escape_markdown(discord.utils.escape_mentions(p))
                 + " does not appear to be a valid player. Are you sure you typed correctly?"
             )
-        else:
-            selected = False
-            while not selected:
-                r = random.randint(-1, 3)
-                if drawn_players[r] == "":
-                    drawn_players[r] = GetPlayerData(p).username
-                    draw.rectangle(
-                        (rect_corners[r][0], rect_corners[r][1]), fill="#00acea"
-                    )
-                    selected = True
+        selected = False
+        while not selected:
+            r = random.randint(-1, 3)
+            if drawn_players[r] == "":
+                drawn_players[r] = get_player_data(p).name
+                x0, y0 = rect_corners[r][0]
+                x1, y1 = rect_corners[r][1]
+                x0, x1 = min(x0, x1), max(x0, x1)
+                y0, y1 = min(y0, y1), max(y0, y1)
+                draw.rectangle((x0, y0, x1, y1), fill="#00acea")
+                selected = True
 
     out_2 = None
     if len(players) > len(to_send):
@@ -121,7 +140,7 @@ def draw_joinedweezer_image(players):
             if drawn_players[x] != "":
                 r = requests.get(
                     "https://mc-heads.net/player/"
-                    + GetPlayerData(drawn_players[x]).uuid
+                    + get_player_data(drawn_players[x]).uuid
                     + "/"
                     + str((rect_corners[x][0][1] - rect_corners[x][1][1]) / 2)
                     + ".png"
@@ -153,11 +172,11 @@ def draw_derelict_image(input_string):
         start_x = (i * 9) + 18
         end_x = sign.width - ((i * 18) + 28)
 
-        while font.getsize(input_string[i])[0] > end_x - start_x:
+        while getsize(font, input_string[i])[0] > end_x - start_x:
             input_string[i] = input_string[i][:-1]
 
         true_start = (
-            (sign.width / 2) - math.floor(font.getsize(input_string[i])[0] / 2) + 7
+            (sign.width / 2) - math.floor(getsize(font, input_string[i])[0] / 2) + 7
         )
         draw.text(
             (true_start, (i * 50) + 7), input_string[i], font=font, fill=(0, 0, 0)
@@ -260,18 +279,18 @@ def draw_chart_image(chart_data, chart_code):
     # DRAW TEXT
     background = Image.open("resources/ImageMeme/Chart/grid2500.png")
     font = ImageFont.truetype("resources/fonts/NotoSans-Bold.ttf", 128)
-    img_txt = Image.new("L", font.getsize(y_axis))
+    img_txt = Image.new("L", getsize(font, y_axis))
     draw_txt = ImageDraw.Draw(img_txt)
     draw_txt.text((0, 0), y_axis, font=font, fill=255)
     t = img_txt.rotate(90, expand=1)
     background.paste(
         ImageOps.colorize(t, (0, 0, 0), (0, 0, 0)),
-        (-10, int((background.height - font.getsize(y_axis)[0]) / 2)),
+        (-10, int((background.height - getsize(font, y_axis)[0]) / 2)),
         t,
     )
     draw = ImageDraw.Draw(background)
     draw.text(
-        (int((background.width - font.getsize(x_axis)[0]) / 2), 2320),
+        (int((background.width - getsize(font, x_axis)[0]) / 2), 2320),
         x_axis,
         (0, 0, 0),
         font=font,
@@ -303,13 +322,13 @@ def draw_chart_image(chart_data, chart_code):
                 - (face_width / 2)
             ),
         ]
-        if GetPlayerData(player_name).valid:
+        if get_player_data(player_name) is not None:
             if path.exists("resources/playerheads/" + str(player_name) + ".png"):
                 pass
             else:
                 r = requests.get(
                     "https://mc-heads.net/avatar/"
-                    + GetPlayerData(player_name).uuid
+                    + get_player_data(player_name).uuid
                     + "/"
                     + str(face_width)
                     + ".png"
@@ -367,54 +386,44 @@ class ImageMeme(commands.Cog):
                 "You must supply at least two usernames: the pearlee and the pearler"
             )
             return
-
         players = []
         for p in args[:2]:
-            data = GetPlayerData(p)
+            try:
+                data = get_player_data(p)
+            except Exception as e:
+                print(f"Failed to get player data: {e}")
             if data and hasattr(data, "username"):
-                players.append(data.username)
+                players.append(data.name)
             elif not re.match(r"^[A-Za-z0-9_]{3,16}$", p):
                 await ctx.channel.send("Invalid usernames supplied")
                 return
             else:
                 players.append(re.match(r"^[A-Za-z0-9_]{3,16}", p).group(0))
 
-        # Date handling
         date = datetime.datetime.today().strftime("%m/%d/%Y")
         if len(args) > 2 and re.match(r"^\d{1,2}/\d{1,2}/\d{1,4}$", args[2]):
             date = re.match(r"^\d{1,2}/\d{1,2}/\d{1,4}$", args[2]).group(0)
-
-        # Generate image in executor
         try:
             await self.bot.loop.run_in_executor(
                 None, functools.partial(draw_pearl_image, players[0], players[1], date)
             )
         except Exception as e:
-            await ctx.channel.send(f"Failed to generate pearl image: {e}")
+            print(f"Failed to generate pearl image: {e}")
             return
-
-        bot_message = await ctx.channel.send(file=discord.File("resources/output.png"))
-
-        # Update locations file
-        try:
-            with open("resources/pearl locations.txt", "r") as file:
-                locations = json.load(file)
-        except FileNotFoundError:
-            locations = {}
-
-        locations[players[0].lower()] = bot_message.jump_url
-        with open("resources/pearl locations.txt", "w") as file:
-            json.dump(locations, file)
+        await ctx.channel.send(file=discord.File("resources/output.png"))
 
     @commands.command(pass_context=True)
-    async def joinedweezer(self, ctx, *args):
+    async def joinedweezer(self, ctx: Context, *args):
         """Let your minecraft avatar join Weezer"""
-        params = functools.partial(draw_joinedweezer_image, list(args))
-        msgs, image = await self.bot.loop.run_in_executor(None, params)
-        for x in msgs:
-            await ctx.channel.send(x)
-        if image is not None:
-            await ctx.channel.send(image, file=discord.File("resources/output.png"))
+        try:
+            params = functools.partial(draw_joinedweezer_image, list(args))
+            msgs, image = await self.bot.loop.run_in_executor(None, params)
+            for x in msgs:
+                await ctx.channel.send(x)
+            if image is not None:
+                await ctx.channel.send(image, file=discord.File("resources/output.png"))
+        except Exception as e:
+            print(f"Failed to join weezer: {e}")
 
     @commands.command(pass_context=True)
     async def derelict(self, ctx, *args):
@@ -444,7 +453,7 @@ class ImageMeme(commands.Cog):
         """Draws two players in the 'get along' shirt"""
         players = [player1, player2]
         for x in players:
-            if not GetPlayerData(x).valid:
+            if get_player_data(x) is None:
                 await ctx.channel.send(
                     discord.utils.escape_markdown(discord.utils.escape_mentions(x))
                     + " does not appear to be a valid player. Are you sure you typed correctly?"
@@ -457,7 +466,7 @@ class ImageMeme(commands.Cog):
     @commands.command(pass_context=True)
     async def dontcare(self, ctx, content):
         """Shows everyone how little you care"""
-        if not GetPlayerData(content).valid:
+        if get_player_data(content) is None:
             await ctx.channel.send(
                 discord.utils.escape_markdown(discord.utils.escape_mentions(content))
                 + " does not appear to be a valid player. Are you sure you typed correctly?"
@@ -470,7 +479,7 @@ class ImageMeme(commands.Cog):
     @commands.command(pass_context=True)
     async def grimreminder(self, ctx, player):
         """Draws a grim reminder"""
-        if not GetPlayerData(player).valid:
+        if get_player_data(player) is None:
             await ctx.channel.send(
                 discord.utils.escape_markdown(discord.utils.escape_mentions(player))
                 + " does not appear to be a valid player. Are you sure you typed correctly?"
@@ -577,7 +586,7 @@ class ImageMeme(commands.Cog):
         except ValueError:
             await ctx.send("Must be number")
             return
-        if not GetPlayerData(playername).valid:
+        if get_player_data(playername) is None:
             await ctx.send("this is not a valid playername")
             return
         if str(chart_code) in chart_data.keys():

@@ -45,59 +45,57 @@ async def invite(ctx: Context):
 @bot.event
 async def on_message(msg: Message):
     try:
-        if msg.author.id == bot.user.id:
+        if msg.author.bot:
             return  # ignore self
-        else:
-            if len(msg.content) != 0 and msg.content.startswith(prefix):
-                await bot.process_commands(msg)
-                return
 
-            lower_content = msg.content.lower()
-            if "delusional" in lower_content:
-                await msg.channel.send(
-                    "Edit CivWiki <https://civwiki.org/wiki/CivWiki:Editing_Guide>"
-                )
+        if len(msg.content) != 0 and msg.content.startswith(prefix):
+            await bot.process_commands(msg)
+            return
 
-            if "lusitanian" in lower_content:
-                await msg.channel.send(
-                    file=discord.File("resources/ImageMeme/Lusitan.png")
-                )
+        lower_content = msg.content.lower()
+        if "delusional" in lower_content:
+            await msg.channel.send(
+                "Edit CivWiki <https://civwiki.org/wiki/CivWiki:Editing_Guide>"
+            )
 
-            if "his final message" in lower_content:
-                await msg.channel.send("To live as a septembrian, is to embrace death.")
-            if (
-                "linux" in lower_content
-                and "gnu" not in lower_content
-                and time.time() - last_times.get(GNU_LINUX, time.time()) >= 60
-            ):
-                last_times[GNU_LINUX] = time.time()
-                await msg.channel.send(gnu_linux)
+        if "lusitanian" in lower_content:
+            await msg.channel.send(file=discord.File("resources/ImageMeme/Lusitan.png"))
 
-            match_page = r"\[{2}([^\]\n]+) *\]{2}"
-            match_template = r"\{{2}([^\]\n]+) *\}{2}"
+        if "his final message" in lower_content:
+            await msg.channel.send("To live as a septembrian, is to embrace death.")
+        if (
+            "linux" in lower_content
+            and "gnu" not in lower_content
+            and time.time() - last_times.get(GNU_LINUX, time.time()) >= 60
+        ):
+            last_times[GNU_LINUX] = time.time()
+            await msg.channel.send(gnu_linux)
 
-            wiki_message = ""
-            wiki_link = "https://civwiki.org/wiki/"
+        match_page = r"\[{2}([^\]\n]+) *\]{2}"
+        match_template = r"\{{2}([^\]\n]+) *\}{2}"
 
-            pages = list(set(re.findall(match_page, msg.content)))
-            templates = list(set(re.findall(match_template, msg.content)))
-            for template in templates:
-                pages.append("Template:" + template)
-            for page in pages[:10]:
-                wiki_message += wiki_link + page.replace(" ", "_") + "\n"
-            if len(pages) > 0:
-                await msg.channel.send(wiki_message)
-            if len(msg.attachments) != 0:
-                for x in msg.attachments:
-                    if (
-                        os.path.splitext(x.filename)[1] == ".schematic"
-                        or os.path.splitext(x.filename)[1] == ".schem"
-                    ):
-                        misc_utilities: MiscUtilities = bot.get_cog("MiscUtilities")
-                        if misc_utilities is not None:
-                            await misc_utilities.getschematic(msg, x)
-    except AttributeError:
-        print("From " + str(msg.author) + ": " + msg.content)
+        wiki_message = ""
+        wiki_link = "https://civwiki.org/wiki/"
+
+        pages = list(set(re.findall(match_page, msg.content)))
+        templates = list(set(re.findall(match_template, msg.content)))
+        for template in templates:
+            pages.append("Template:" + template)
+        for page in pages[:10]:
+            wiki_message += wiki_link + page.replace(" ", "_") + "\n"
+        if len(pages) > 0:
+            await msg.channel.send(wiki_message)
+        if len(msg.attachments) != 0:
+            for x in msg.attachments:
+                if (
+                    os.path.splitext(x.filename)[1] == ".schematic"
+                    or os.path.splitext(x.filename)[1] == ".schem"
+                ):
+                    misc_utilities: MiscUtilities = bot.get_cog("MiscUtilities")
+                    if misc_utilities is not None:
+                        await misc_utilities.getschematic(msg, x)
+    except Exception as e:
+        print(f"{msg.author}: {msg.content} failed with {e}")
 
 
 @bot.event
