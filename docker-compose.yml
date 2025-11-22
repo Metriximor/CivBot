@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  civbot:
+    image: civbot:latest   # Build from Dockerfile
+    container_name: civbot
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./config.ini:/app/config.ini   # Mount your bot token/config
+      - ./resources:/app/resources    # Optional: persistent resources folder
+    restart: unless-stopped           # Automatically restart if it crashes

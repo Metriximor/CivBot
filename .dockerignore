@@ -1,0 +1,32 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments (if any)
+venv/
+env/
+*.env
+.ruff_cache/
+
+# Logs
+*.log
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Git
+.git/
+.gitignore
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+resources/output.png
+resources/*.schematic
+resources/*.schem

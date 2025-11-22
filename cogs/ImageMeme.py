@@ -18,13 +18,14 @@ from mcuuid.api import GetPlayerData
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from discord.ext import commands
+from discord.ext.commands import Context
 
 # -----------
 # Draw images
 # -----------
 
 
-def draw_pearl_image(pearled_player, pearled_by, now):
+def draw_pearl_image(pearled_player: str, pearled_by: str, now: str):
     random.seed(a=pearled_player.lower() + pearled_by.lower() + now, version=2)
     code = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
     font = ImageFont.truetype("resources/fonts/Minecraftia.ttf", 24)
@@ -357,40 +358,53 @@ class ImageMeme(commands.Cog):
     # Commands
     # --------
 
-    @commands.command(pass_context=True)
-    async def pearl(self, ctx, *, content):
+    @commands.command()
+    async def pearl(self, ctx: Context, *, content):
         """Pearls a player"""
-        if len(content.split(" ")) > 1:
-            players = []
-            for p in content.split(" ")[:2]:
-                if GetPlayerData(p) and hasattr(GetPlayerData(p), "username"):
-                    players.append(GetPlayerData(p).username)
-                elif not re.match("^(\w|d){3,16}", p):
-                    await ctx.channel.send("Invalid usernames supplied")
-                    return
-                else:
-                    players.append(re.match("^(\w|d){3,30}", p).group(0))
-
-            date = datetime.datetime.today().strftime("%m/%d/%Y")
-            if len(content.split(" ")) > 2 and re.match(
-                "\d{1,2}\/\d{1,2}\/\d{1,4}", content.split(" ")[2]
-            ):
-                date = re.match(
-                    "\d{1,2}\/\d{1,2}\/\d{1,4}", content.split(" ")[2]
-                ).group(0)
-
-            params = functools.partial(draw_pearl_image, players[0], players[1], date)
-            await self.bot.loop.run_in_executor(None, params)
-            bot_message = await ctx.channel.send(
-                file=discord.File("resources/output.png")
+        args = content.split()
+        if len(args) < 2:
+            await ctx.channel.send(
+                "You must supply at least two usernames: the pearlee and the pearler"
             )
+            return
 
+        players = []
+        for p in args[:2]:
+            data = GetPlayerData(p)
+            if data and hasattr(data, "username"):
+                players.append(data.username)
+            elif not re.match(r"^[A-Za-z0-9_]{3,16}$", p):
+                await ctx.channel.send("Invalid usernames supplied")
+                return
+            else:
+                players.append(re.match(r"^[A-Za-z0-9_]{3,16}", p).group(0))
+
+        # Date handling
+        date = datetime.datetime.today().strftime("%m/%d/%Y")
+        if len(args) > 2 and re.match(r"^\d{1,2}/\d{1,2}/\d{1,4}$", args[2]):
+            date = re.match(r"^\d{1,2}/\d{1,2}/\d{1,4}$", args[2]).group(0)
+
+        # Generate image in executor
+        try:
+            await self.bot.loop.run_in_executor(
+                None, functools.partial(draw_pearl_image, players[0], players[1], date)
+            )
+        except Exception as e:
+            await ctx.channel.send(f"Failed to generate pearl image: {e}")
+            return
+
+        bot_message = await ctx.channel.send(file=discord.File("resources/output.png"))
+
+        # Update locations file
+        try:
             with open("resources/pearl locations.txt", "r") as file:
                 locations = json.load(file)
-            await asyncio.sleep(1)
-            locations[players[0].lower()] = bot_message.jump_url
-            with open("resources/pearl locations.txt", "w") as file:
-                json.dump(locations, file)
+        except FileNotFoundError:
+            locations = {}
+
+        locations[players[0].lower()] = bot_message.jump_url
+        with open("resources/pearl locations.txt", "w") as file:
+            json.dump(locations, file)
 
     @commands.command(pass_context=True)
     async def joinedweezer(self, ctx, *args):

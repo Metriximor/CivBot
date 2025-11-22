@@ -3,8 +3,12 @@ import os
 import re
 import time
 import discord
+import asyncio
 from discord.ext import commands
+from discord import Message
 from cogs.TextMeme import TextMeme
+from cogs.MiscUtilities import MiscUtilities
+from discord.ext.commands import Context
 
 
 prefix = "%"
@@ -30,83 +34,69 @@ last_times = {}
 
 
 @bot.command(pass_context=True)
-async def invite(ctx):
+async def invite(ctx: Context):
     """CivBot invite"""
     await ctx.channel.send(
         "https://discordapp.com/api/oauth2/authorize?client_id=614086832245964808&permissions=0&scope=bot"
     )
 
 
-@bot.command(pass_context=True)
-async def drama(ctx):
-    text_meme: TextMeme = bot.get_cog("TextMeme")
-    if text_meme is not None:
-        await text_meme.drama(ctx)
-
-
-@bot.command(pass_context=True)
-async def whereis(ctx):
-    coords = re.match(r"%whereis ((?:[+-]?\d)+)[ ,]((?:[+-]?\d)+)", ctx.content)
-    MiscUtilities = bot.get_cog("MiscUtilities")
-    if MiscUtilities is not None:
-        await MiscUtilities.whereis(ctx, coords.group(1), coords.group(2), True)
-
-
 @bot.event
-async def on_message(ctx):
+async def on_message(msg: Message):
     try:
-        if ctx.author.id == bot.user.id:
+        if msg.author.id == bot.user.id:
             return  # ignore self
         else:
-            if len(ctx.content) != 0 and prefix == ctx.content[0]:
-                await bot.process_commands(ctx)
-            else:  # regular chat message
-                lower_content = ctx.content.lower()
-                if "delusional" in lower_content:
-                    await ctx.channel.send(
-                        "Edit CivWiki <https://civwiki.org/wiki/CivWiki:Editing_Guide>"
-                    )
-                if "lusitanian" in lower_content:
-                    await ctx.channel.send(
-                        file=discord.File("resources/ImageMeme/Lusitan.png")
-                    )
-                if "his final message" in lower_content:
-                    await ctx.channel.send(
-                        "To live as a septembrian, is to embrace death."
-                    )
-                if (
-                    "linux" in lower_content
-                    and "gnu" not in lower_content
-                    and 60 > time.time() - last_times.get("gnu_linux", 0)
-                ):
-                    last_times["gnu_linux"] = time.time()
-                    await ctx.channel.send(gnu_linux)
+            if len(msg.content) != 0 and msg.content.startswith(prefix):
+                await bot.process_commands(msg)
+                return
 
-                match_page = r"\[{2}([^\]\n]+) *\]{2}"
-                match_template = r"\{{2}([^\]\n]+) *\}{2}"
+            lower_content = msg.content.lower()
+            if "delusional" in lower_content:
+                await msg.channel.send(
+                    "Edit CivWiki <https://civwiki.org/wiki/CivWiki:Editing_Guide>"
+                )
 
-                wiki_message = ""
-                wiki_link = "https://civwiki.org/wiki/"
+            if "lusitanian" in lower_content:
+                await msg.channel.send(
+                    file=discord.File("resources/ImageMeme/Lusitan.png")
+                )
 
-                pages = list(set(re.findall(match_page, ctx.content)))
-                templates = list(set(re.findall(match_template, ctx.content)))
-                for template in templates:
-                    pages.append("Template:" + template)
-                for page in pages[:10]:
-                    wiki_message += wiki_link + page.replace(" ", "_") + "\n"
-                if len(pages) > 0:
-                    await ctx.channel.send(wiki_message)
-            if len(ctx.attachments) != 0:
-                for x in ctx.attachments:
+            if "his final message" in lower_content:
+                await msg.channel.send("To live as a septembrian, is to embrace death.")
+            if (
+                "linux" in lower_content
+                and "gnu" not in lower_content
+                and 60 > time.time() - last_times.get("gnu_linux", time.time())
+            ):
+                last_times["gnu_linux"] = time.time()
+                await msg.channel.send(gnu_linux)
+
+            match_page = r"\[{2}([^\]\n]+) *\]{2}"
+            match_template = r"\{{2}([^\]\n]+) *\}{2}"
+
+            wiki_message = ""
+            wiki_link = "https://civwiki.org/wiki/"
+
+            pages = list(set(re.findall(match_page, msg.content)))
+            templates = list(set(re.findall(match_template, msg.content)))
+            for template in templates:
+                pages.append("Template:" + template)
+            for page in pages[:10]:
+                wiki_message += wiki_link + page.replace(" ", "_") + "\n"
+            if len(pages) > 0:
+                await msg.channel.send(wiki_message)
+            if len(msg.attachments) != 0:
+                for x in msg.attachments:
                     if (
                         os.path.splitext(x.filename)[1] == ".schematic"
                         or os.path.splitext(x.filename)[1] == ".schem"
                     ):
-                        MiscUtilities = bot.get_cog("MiscUtilities")
-                        if MiscUtilities is not None:
-                            await MiscUtilities.getschematic(ctx, x)
+                        misc_utilities: MiscUtilities = bot.get_cog("MiscUtilities")
+                        if misc_utilities is not None:
+                            await misc_utilities.getschematic(msg, x)
     except AttributeError:
-        print("From " + str(ctx.author) + ": " + ctx.content)
+        print("From " + str(msg.author) + ": " + msg.content)
 
 
 @bot.event
@@ -123,12 +113,20 @@ async def on_ready():
     for cmd in registered_cmds:
         if cmd.name not in local_cmds:
             print(f"Deleting unregistered command: {cmd.name}")
-            await bot.tree.remove_command(cmd.name, type=discord.AppCommandType.chat_input)
+            bot.tree.remove_command(cmd.name, type=discord.AppCommandType.chat_input)
     await bot.tree.sync()
     print("Slash command cleanup complete.")
+    print(f"Loaded cogs: {bot.cogs}")
 
 
 extensions = ["ImageMeme", "TextMeme", "MiscUtilities", "CivDiscord"]
+
+
+async def run_bot(token: str):
+    for extension in extensions:
+        await bot.load_extension(f"cogs.{extension}")
+    await bot.start(token)
+
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
@@ -136,13 +134,4 @@ if __name__ == "__main__":
     config.read("config.ini")
     token = config.get(config_type, "token")
 
-    for extension in extensions:
-        bot.load_extension(f"cogs.{extension}")
-
-    while True:
-        try:
-            bot.run(token)
-        except Exception as e:
-            print("Error", e)
-        print("Waiting until restart")
-        time.sleep(20)
+    asyncio.run(run_bot(token))
