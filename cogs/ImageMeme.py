@@ -138,7 +138,7 @@ def draw_joinedweezer_image(players):
     if len(players) > len(to_send):
         for x in range(0, len(drawn_players)):
             if drawn_players[x] != "":
-                r = requests.get(f"https://mc-heads.net/player/{get_player_data(drawn_players[x]).name}/{(rect_corners[x][0][1] - rect_corners[x][1][1]) / 2}.png")
+                r = requests.get(f"https://minotar.net/armor/body/{get_player_data(drawn_players[x]).name}/{(rect_corners[x][0][1] - rect_corners[x][1][1]) / 2}.png")
                 with open("resources/test.png", "wb") as f:
                     f.write(r.content)
                 player_to_paste = Image.open("resources/test.png")
@@ -204,7 +204,7 @@ def draw_getalong_image(players):
     img_shirt = Image.open("resources/ImageMeme/Getalong_template.png")
     background = Image.new("RGB", (600, 500), color=(255, 255, 255))
     for i, player in enumerate(players):
-        r = requests.get("https://mc-heads.net/player/" + player + "/160.png")
+        r = requests.get("https://minotar.net/armor/body/" + player + "/160.png")
         background.paste(
             Image.open(io.BytesIO(r.content)), ((150 + i * 150), (110 - i * 12))
         )
@@ -213,7 +213,7 @@ def draw_getalong_image(players):
 
 
 def draw_dontcare_image(username):
-    r = requests.get("https://mc-heads.net/avatar/" + str(username) + "/325.png")
+    r = requests.get("https://minotar.net/avatar/user" + str(username) + "/325.png")
 
     with open("resources/test.png", "wb") as f:
         f.write(r.content)
@@ -236,7 +236,7 @@ def draw_dontcare_image(username):
 
 def draw_grimreminder_image(player):
     background = Image.open("resources/ImageMeme/grimreminder.jpg")
-    r = requests.get("https://mc-heads.net/avatar/" + player + "/254.png")
+    r = requests.get("https://minotar.net/avatar/user" + player + "/254.png")
     head = Image.open(io.BytesIO(r.content)).convert("RGBA")
     head = head.rotate(-12, Image.NEAREST, True, fillcolor=2)
     background.paste(head, (215, 372), head)
@@ -321,7 +321,7 @@ def draw_chart_image(chart_data, chart_code):
                 pass
             else:
                 r = requests.get(
-                    "https://mc-heads.net/avatar/"
+                    "https://minotar.net/avatar/user"
                     + get_player_data(player_name).name
                     + "/"
                     + str(face_width)
