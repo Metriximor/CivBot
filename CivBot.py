@@ -30,7 +30,8 @@ There really is a Linux, and these people are using it, but it is just a part of
 """.strip()
 do_orange_response = False
 # cut down on spam: don't respond if last response was recent
-last_times = {}
+GNU_LINUX = "gnu_linux"
+last_times: dict[str, float] = {}
 
 
 @bot.command(pass_context=True)
@@ -67,9 +68,9 @@ async def on_message(msg: Message):
             if (
                 "linux" in lower_content
                 and "gnu" not in lower_content
-                and 60 > time.time() - last_times.get("gnu_linux", time.time())
+                and time.time() - last_times.get(GNU_LINUX, time.time()) >= 60
             ):
-                last_times["gnu_linux"] = time.time()
+                last_times[GNU_LINUX] = time.time()
                 await msg.channel.send(gnu_linux)
 
             match_page = r"\[{2}([^\]\n]+) *\]{2}"
