@@ -135,17 +135,7 @@ class MiscUtilities(commands.Cog):
                 k: v for k, v in sorted(distances.items(), key=lambda item: item[1])
             }
 
-            out = (
-                str(
-                    "<https://ccmap.github.io/#c="
-                    + str(int(x))
-                    + ","
-                    + str(int(z))
-                    + ","
-                    + "r400>"
-                )
-                + " ```asciidoc\n"
-            )
+            out = f"<https://ccmap.github.io/#c={int(x)},{int(z)},r400>```asciidoc\n"
             for d in range(0, 14 if not fromRelay else 4):
                 ind = list(map(itemgetter("id"), ccmap["features"])).index(
                     list(distances)[d]

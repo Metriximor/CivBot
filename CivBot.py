@@ -105,7 +105,7 @@ async def on_ready():
     for guild in bot.guilds:
         print("    " + guild.name)
     await bot.change_presence(
-        status=discord.Status.online, activity=discord.Game("reddit.com/r/civclassics")
+        status=discord.Status.online, activity=discord.Game("reddit.com/r/civmc")
     )
     registered_cmds = await bot.tree.fetch_commands()
     local_cmds = {cmd.name for cmd in bot.tree.get_commands()}
