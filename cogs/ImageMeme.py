@@ -207,9 +207,8 @@ def draw_getalong_image(players):
     background = Image.new("RGBA", (600, 500), color=(255, 255, 255))
     for i, player in enumerate(players):
         r = requests.get("https://minotar.net/armor/body/" + player + "/160.png")
-        background.paste(
-            Image.open(io.BytesIO(r.content)), ((150 + i * 150), (110 - i * 12))
-        )
+        player_img = Image.open(io.BytesIO(r.content)).convert("RGBA")
+        background.paste(player_img, ((150 + i * 150), (110 - i * 12)), mask=player_img)
     background.paste(img_shirt, (0, 0), mask=img_shirt)
     background.save("resources/output.png", "PNG")
 
