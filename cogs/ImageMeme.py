@@ -215,7 +215,7 @@ def draw_getalong_image(players):
 
 
 def draw_dontcare_image(username):
-    r = requests.get("https://minotar.net/avatar/user" + str(username) + "/325.png")
+    r = requests.get("https://minotar.net/avatar/" + str(username) + "/325.png")
 
     with open("resources/test.png", "wb") as f:
         f.write(r.content)
@@ -238,7 +238,7 @@ def draw_dontcare_image(username):
 
 def draw_grimreminder_image(player):
     background = Image.open("resources/ImageMeme/grimreminder.jpg")
-    r = requests.get("https://minotar.net/avatar/user" + player + "/254.png")
+    r = requests.get("https://minotar.net/avatar/" + player + "/254.png")
     head = Image.open(io.BytesIO(r.content)).convert("RGBA")
     head = head.rotate(-12, Image.NEAREST, True, fillcolor=2)
     background.paste(head, (215, 372), head)
@@ -323,7 +323,7 @@ def draw_chart_image(chart_data, chart_code):
                 pass
             else:
                 r = requests.get(
-                    "https://minotar.net/avatar/user"
+                    "https://minotar.net/avatar/"
                     + get_player_data(player_name).name
                     + "/"
                     + str(face_width)
