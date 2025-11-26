@@ -204,9 +204,9 @@ def draw_derelict_image(input_string):
 
 def draw_getalong_image(players):
     img_shirt = Image.open("resources/ImageMeme/Getalong_template.png")
-    background = Image.new("RGBA", (600, 500), color=(255, 255, 255))
+    background = Image.new("RGB", (600, 500), color=(255, 255, 255))
     for i, player in enumerate(players):
-        r = requests.get("https://minotar.net/armor/body/" + player + "/160.png")
+        r = requests.get(f"https://mc-heads.net/player/{player}/160.png")
         background.paste(
             Image.open(io.BytesIO(r.content)), ((150 + i * 150), (110 - i * 12))
         )
