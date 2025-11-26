@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  restart_server:
+  deploy_civbot:
     runs-on: ubuntu-latest
     steps:
       - name: Restart Server
