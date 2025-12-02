@@ -66,7 +66,7 @@ async def on_message(msg: Message):
         if (
             "linux" in lower_content
             and "gnu" not in lower_content
-            and time.time() - last_times.get(GNU_LINUX, time.time()) >= 60
+            and time.time() - last_times.get(GNU_LINUX, 0) >= 60
         ):
             last_times[GNU_LINUX] = time.time()
             await msg.channel.send(gnu_linux)
