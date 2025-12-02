@@ -232,6 +232,10 @@ class TextMeme(commands.Cog):
         await ctx.channel.send(unwiardify(escape_mentions(content)))
 
     @commands.command()
+    async def sedition(self, ctx, *, content):
+        await ctx.channel.send("Does CIVBOT have access to the upmost echelons of this discord. Who made it, and what was their intent? Hopefully not to commit further treason and sedition against the state of Mount Augusta? The government should probably be looking into a security audit!")
+
+    @commands.command()
     async def drama(self, ctx: Context):
         """Generates CivClassic drama"""
         await ctx.channel.send(escape_mentions(perchance_gen(perchance_civ_classic)))
